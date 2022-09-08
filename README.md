@@ -44,20 +44,5 @@ with plugin support.
 
 ## Backup and restore
 
-- Stop the containers.
-  ```
-  docker-compose -f ./docker-compose-kanboard.yml stop
-  ```
-
-- Backup
-  ```
-  docker-compose -f ./docker-compose-kanboard.yml run --rm db-backup
-  ```
-
-  - This creates the file `./backup/db.tar.bz2`
-
-- Restore
-  ```
-  docker-compose -f ./docker-compose-kanboard.yml run --rm db-restore
-  ```
+> TODO
 
