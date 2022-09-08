@@ -11,6 +11,11 @@ with plugin support.
     to the `plugins/` directory. These will be copied to the docker
     container when building it.
 
+- Database
+  - Create a `db/` subdirectory.
+  - This will be mounted on the container to provide persistent
+    storage for the postgres database container.
+
 - Build the custom kanboard image that includes plugins.
   ```
   docker build -t kanboard:mib .
@@ -36,4 +41,23 @@ with plugin support.
     ```
 
 - Login to kanboard at http://localhost:8088
+
+## Backup and restore
+
+- Stop the containers.
+  ```
+  docker-compose -f ./docker-compose-kanboard.yml stop
+  ```
+
+- Backup
+  ```
+  docker-compose -f ./docker-compose-kanboard.yml run --rm db-backup
+  ```
+
+  - This creates the file `./backup/db.tar.bz2`
+
+- Restore
+  ```
+  docker-compose -f ./docker-compose-kanboard.yml run --rm db-restore
+  ```
 
