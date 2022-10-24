@@ -10,8 +10,10 @@ services:
       - '5432:5432'
     volumes:
       - ./db:/var/lib/postgresql/data
+
   kanboard:
     container_name: kanboard
+    restart: always
     image: kanboard:mib
     depends_on:
       - db
@@ -23,6 +25,7 @@ services:
       - kanboard_ssl:/etc/nginx/ssl
     environment:
       DATABASE_URL: postgres://postgres:postgres@db:5432/kanboard
+
 volumes:
   kanboard_data:
   kanboard_plugins:
