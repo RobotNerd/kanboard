@@ -9,7 +9,9 @@ services:
     ports:
       - '5432:5432'
     volumes:
-      - ./db:/var/lib/postgresql/data
+      - type: bind
+        source: ./db
+        target: /var/lib/postgresql/data
 
   kanboard:
     container_name: kanboard
@@ -31,4 +33,3 @@ volumes:
   kanboard_plugins:
   kanboard_ssl:
   db:
-

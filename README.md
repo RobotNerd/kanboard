@@ -27,6 +27,8 @@ with plugin support.
   ```
 
 - Manually create the database (first time only).
+  - NOTE: If restore from backup, skip these steps and follow the
+    [Restore](#restore) instructions below.
   - Exec into the postgres container.
     ```
     docker exec -it <ID> /bin/ash
@@ -44,17 +46,31 @@ with plugin support.
 
 ## Backup and restore
 
-To backup, run this command to create a tar file of the db directory.
-Replace DATE with the current date/time.
+> Steps taken from here https://stackoverflow.com/a/63435830/241025.
 
-```
-tar -cvjSf backup-DATE.tar.bz2 db
-```
-
-To restore from a fresh deployment, delete the `db` subdirectory and
-run this command:
-
-```
-tar -xvjf backup-DATE.tar.bz2
+- Run all commands on the host.
+- Replace `CONTAINER_ID` with the id of the postgres container.
+- To backup:
+```shell
+docker exec -t CONTAINER_ID pg_dumpall -c -U postgres | gzip > ./kanboard_dump_$(date +"%Y-%m-%d_%H_%M_%S").sql.gz
 ```
 
+- To restore (replace `BACKUP` with the name of the backup file).
+```shell
+gunzip < BACKUP | docker exec -i CONTAINER_ID psql -U postgres -d kanboard
+```
+
+### Automate backups
+
+Create a cron job to automatically run the backups. The steps below provide an example implementation.
+- Create a directory to store the backups.
+  ```
+  mkdir $HOME/dev/kanboard/backup
+  ```
+- Run `crontab -e`.
+- Add a line to run the backup command.
+  - This example runs the backup every Saturday at 0100.
+  - This command gets the container id assuming that there's only one postgres container running on the system.
+  ```shell
+  0 1 * * 6 docker exec -t $(docker ps | grep postgres | awk '{ print $1 }') pg_dumpall -c -U postgres | gzip > $HOME/dev/kanboard/backup/kanboard_dump_$(date +"%Y-%m-%d_%H_%M_%S").sql.gz
+  ```
